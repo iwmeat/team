@@ -1,0 +1,99 @@
+#include <iostream>
+#include <string>
+
+class Zombie {
+private:
+    std::string name;
+    int health;
+    int attackDamage;
+    float speed;
+    bool isAlive;
+
+public:
+    // 构造函数
+    Zombie(std::string zombieName, int initialHealth, int damage, float moveSpeed)
+        : name(zombieName), health(initialHealth), attackDamage(damage), 
+          speed(moveSpeed), isAlive(true) {}
+
+    // 僵尸攻击方法
+    void attack() {
+        if (isAlive) {
+            std::cout << name << " attacks for " << attackDamage << " damage!\n";
+        } else {
+            std::cout << name << " is dead and cannot attack.\n";
+        }
+    }
+
+    // 僵尸移动方法
+    void move() {
+        if (isAlive) {
+            std::cout << name << " shambles forward at speed " << speed << ".\n";
+        } else {
+            std::cout << name << " lies motionless on the ground.\n";
+        }
+    }
+
+    // 受到伤害
+    void takeDamage(int damage) {
+        if (isAlive) {
+            health -= damage;
+            std::cout << name << " takes " << damage << " damage. ";
+            
+            if (health <= 0) {
+                health = 0;
+                isAlive = false;
+                std::cout << name << " has been defeated!\n";
+            } else {
+                std::cout << "Remaining health: " << health << "\n";
+            }
+        }
+    }
+
+    // 检查是否存活
+    bool alive() const {
+        return isAlive;
+    }
+
+    // 获取僵尸信息
+    void displayInfo() const {
+        std::cout << "Zombie: " << name << "\n"
+                  << "Health: " << health << "\n"
+                  << "Attack: " << attackDamage << "\n"
+                  << "Speed: " << speed << "\n"
+                  << "Status: " << (isAlive ? "Alive" : "Dead") << "\n\n";
+    }
+};
+
+int main() {
+    // 创建不同类型的僵尸
+    Zombie walker("Walker", 50, 10, 1.5f);
+    Zombie runner("Runner", 30, 15, 3.0f);
+    Zombie tank("Tank", 100, 20, 0.8f);
+
+    // 显示僵尸信息
+    walker.displayInfo();
+    runner.displayInfo();
+    tank.displayInfo();
+
+    // 模拟游戏回合
+    std::cout << "=== GAME ROUND ===\n";
+    walker.move();
+    runner.move();
+    tank.move();
+
+    walker.attack();
+    runner.attack();
+    tank.attack();
+
+    // 僵尸受到伤害
+    walker.takeDamage(20);
+    runner.takeDamage(40); // 这会击败runner
+    tank.takeDamage(30);
+
+    // 再次显示信息查看状态变化
+    walker.displayInfo();
+    runner.displayInfo();
+    tank.displayInfo();
+
+    return 0;
+}
