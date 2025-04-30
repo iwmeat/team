@@ -1,0 +1,157 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+// 基础僵尸类
+class Zombie {
+protected:
+    std::string name;
+    int health;
+    int damage;
+    float speed;
+    std::string specialAbility;
+
+public:
+    Zombie(const std::string& name, int health, int damage, float speed, const std::string& ability)
+        : name(name), health(health), damage(damage), speed(speed), specialAbility(ability) {}
+    
+    virtual ~Zombie() {}
+
+    // 显示僵尸信息
+    virtual void display() const {
+        std::cout << "Zombie Type: " << name << "\n"
+                  << "Health: " << health << "\n"
+                  << "Damage: " << damage << "\n"
+                  << "Speed: " << speed << "\n"
+                  << "Special Ability: " << specialAbility << "\n\n";
+    }
+
+    // 攻击行为
+    virtual void attack() const {
+        std::cout << name << " attacks for " << damage << " damage!\n";
+    }
+
+    // 移动行为
+    virtual void move() const {
+        std::cout << name << " moves at speed " << speed << "\n";
+    }
+
+    // 使用特殊能力
+    virtual void useSpecialAbility() const {
+        std::cout << name << " uses " << specialAbility << "!\n";
+    }
+};
+
+// 特殊僵尸类型1: 坦克僵尸
+class TankZombie : public Zombie {
+public:
+    TankZombie() : Zombie("Tank Zombie", 500, 30, 0.5f, "Body Slam") {}
+    
+    void display() const override {
+        std::cout << "=== HEAVY CLASS ZOMBIE ===\n";
+        Zombie::display();
+    }
+    
+    void attack() const override {
+        std::cout << name << " smashes with massive force for " << damage << " damage!\n";
+    }
+};
+
+// 特殊僵尸类型2: 快速僵尸
+class FastZombie : public Zombie {
+public:
+    FastZombie() : Zombie("Fast Zombie", 100, 15, 2.5f, "Quick Dash") {}
+    
+    void display() const override {
+        std::cout << "=== SPEED CLASS ZOMBIE ===\n";
+        Zombie::display();
+    }
+    
+    void move() const override {
+        std::cout << name << " dashes rapidly at speed " << speed << "!\n";
+    }
+};
+
+// 特殊僵尸类型3: 毒液僵尸
+class ToxicZombie : public Zombie {
+private:
+    int poisonDamage;
+    
+public:
+    ToxicZombie() : Zombie("Toxic Zombie", 150, 10, 1.0f, "Poison Cloud"), poisonDamage(5) {}
+    
+    void display() const override {
+        std::cout << "=== TOXIC CLASS ZOMBIE ===\n";
+        Zombie::display();
+        std::cout << "Poison Damage: " << poisonDamage << " per second\n\n";
+    }
+    
+    void attack() const override {
+        Zombie::attack();
+        std::cout << name << " also poisons the target for " << poisonDamage 
+                  << " damage per second!\n";
+    }
+};
+
+// 特殊僵尸类型4: 爆炸僵尸
+class ExplodingZombie : public Zombie {
+private:
+    int explosionDamage;
+    int explosionRadius;
+    
+public:
+    ExplodingZombie() 
+        : Zombie("Exploding Zombie", 80, 5, 1.2f, "Suicide Explosion"), 
+          explosionDamage(100), explosionRadius(3) {}
+    
+    void display() const override {
+        std::cout << "=== EXPLOSIVE CLASS ZOMBIE ===\n";
+        Zombie::display();
+        std::cout << "Explosion Damage: " << explosionDamage << "\n"
+                  << "Explosion Radius: " << explosionRadius << " meters\n\n";
+    }
+    
+    void useSpecialAbility() const override {
+        std::cout << name << " explodes on death, dealing " << explosionDamage 
+                  << " damage in a " << explosionRadius << " meter radius!\n";
+    }
+};
+
+// 僵尸生成工厂
+class ZombieFactory {
+public:
+    enum ZombieType { TANK, FAST, TOXIC, EXPLODING };
+    
+    static Zombie* createZombie(ZombieType type) {
+        switch(type) {
+            case TANK: return new TankZombie();
+            case FAST: return new FastZombie();
+            case TOXIC: return new ToxicZombie();
+            case EXPLODING: return new ExplodingZombie();
+            default: return nullptr;
+        }
+    }
+};
+
+int main() {
+    // 创建不同类型的僵尸
+    std::vector<Zombie*> zombies;
+    
+    zombies.push_back(ZombieFactory::createZombie(ZombieFactory::TANK));
+    zombies.push_back(ZombieFactory::createZombie(ZombieFactory::FAST));
+    zombies.push_back(ZombieFactory::createZombie(ZombieFactory::TOXIC));
+    zombies.push_back(ZombieFactory::createZombie(ZombieFactory::EXPLODING));
+    
+    // 展示僵尸信息并演示行为
+    for (const auto& zombie : zombies) {
+        zombie->display();
+        zombie->move();
+        zombie->attack();
+        zombie->useSpecialAbility();
+        std::cout << "-------------------------\n\n";
+        
+        delete zombie; // 释放内存
+    }
+    
+    return 0;
+}
